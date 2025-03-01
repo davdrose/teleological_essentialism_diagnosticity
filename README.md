@@ -10,10 +10,10 @@ __Contents__:
 
 ## Introduction
 
-<!-- <img src="figures/storyboard.png" width="100%" align="center">
+<img src="figures/storyboard.png" width="100%" align="center">
 
 <br clear="left" />
-<br clear="right" /> -->
+<br clear="right" />
 
 Teleological essentialism suggests that purposes are treated as the essences, challenging  standard psychological essentialism which treats essences as scientifically construed common causes. We show that the effect of teleology can’t be explained by people reasoning diagnostically from changes in purposes to changes in scientifically construed causes, that people recognize that functions are multiply realizable, and that this applies even to biological kinds. A bee made to look like a spider, that has the DNA of bees but the purpose of spiders is categorized as a spider (Experiment 1). Even making explicit that DNA is a common cause of a feature (e.g., blue spots) and a purpose (e.g., making honey), changes to the purpose have a greater impact on categorization judgments than changes to a feature (Experiment 2). Moreover, interventions on a causal mechanism that produce a feature matter less than interventions on a causal mechanism that produces a function (Experiment 3), and functions matter more in categorization than causal mechanisms (Experiment 4). Together our findings support teleological essentialism, build on our understanding of how people think about functions, and suggest a reorientation of research on essentialist thinking.  
 
