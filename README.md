@@ -56,9 +56,10 @@ Teleological essentialism suggests that purposes are treated as the essences, ch
   - `R` contains the analysis scripts that were used to analyze data and generate figures
      (view a rendered file [here](https://davdrose.github.io/teleological_essentialism_diagnosticity/)).
 - `data/` contains anonymized data from all experiments:
-  - `experiment1` contains `experiment1.db` which includes trial and demographic data. 
-  - `experiment2` contains `experiment2.csv` which includes the trial data and `experiment2_demographics.csv` which includes demographic data. The remaining files are for getting the probabilities of sentence completions from large language models for the properties used in experiment 2. 
-  - `experiment3` contains `experiment3.csv` which includes the trial data for experiment 3 while `experiment2_demographics.csv` contains the demographic data.
+  - `experiment1` contains `exp1.csv` which includes the trial data and `exp1_demographics.csv` which includes demographic data.
+  - `experiment2` contains `exp2.csv` which includes the trial data and `exp2_demographics.csv` which includes demographic data.
+  - `experiment3` contains `exp3.csv` which includes the trial data and `exp3_demographics.csv` which includes demographic data.
+  - `experiment4` contains `exp4.csv` which includes the trial data and `exp4_demographics.csv` which includes demographic data.
 - `docs/` contains all the experiment code for each experiment. You can preview the experiments below:
     - [experiment 1](https://davdrose.github.io/teleological_essentialism_diagnosticity/experiment1)
     - [experiment 2](https://davdrose.github.io/teleological_essentialism_diagnosticity/experiment2)
