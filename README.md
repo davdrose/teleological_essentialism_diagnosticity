@@ -47,10 +47,10 @@ Teleological essentialism suggests that purposes are treated as the essences, ch
 
 - `code/` contains all the code for the experiments, analyzing data and generating figures.
   - `experiments` contains code for each experiment that was run. All experiments were pre-registered and run in jsPsych. 
-  	- `experiment1` ([pre-registration](https://osf.io/2wb3e))
-	- `experiment2` ([pre-registration](https://osf.io/q6xdj))
-	- `experiment3` ([pre-registration](https://osf.io/rb8yt))
-	- `experiment4` ([pre-registration](https://osf.io/3nshc))
+   - `experiment1` ([pre-registration](https://osf.io/2wb3e))
+	 - `experiment2` ([pre-registration](https://osf.io/q6xdj))
+	 - `experiment3` ([pre-registration](https://osf.io/rb8yt))
+	 - `experiment4` ([pre-registration](https://osf.io/3nshc))
 
 
   - `R` contains the analysis scripts that were used to analyze data and generate figures
@@ -61,8 +61,8 @@ Teleological essentialism suggests that purposes are treated as the essences, ch
   - `experiment3` contains `exp3.csv` which includes the trial data and `exp3_demographics.csv` which includes demographic data.
   - `experiment4` contains `exp4.csv` which includes the trial data and `exp4_demographics.csv` which includes demographic data.
 - `docs/` contains all the experiment code for each experiment. You can preview the experiments below:
-    - [experiment 1](https://davdrose.github.io/teleological_essentialism_diagnosticity/experiment1)
-    - [experiment 2](https://davdrose.github.io/teleological_essentialism_diagnosticity/experiment2)
+  - [experiment 1](https://davdrose.github.io/teleological_essentialism_diagnosticity/experiment1)
+  - [experiment 2](https://davdrose.github.io/teleological_essentialism_diagnosticity/experiment2)
 	- [experiment 3](https://davdrose.github.io/teleological_essentialism_diagnosticity/experiment3)
 	- [experiment 4](https://davdrose.github.io/teleological_essentialism_diagnosticity/experiment4)
 - `figures/` contains all the figures from the paper (generated using the script in `code/R/`). 

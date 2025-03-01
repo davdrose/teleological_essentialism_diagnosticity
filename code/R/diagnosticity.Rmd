@@ -2,7 +2,6 @@
 title: "Teleological essentialism, diagnosticity and multiple realizability"
 author: "David Rose, Shaun Nichols & Tobias Gerstenberg"
 date: "`r Sys.Date()`"
-date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:
   bookdown::html_document2:
     toc: true
