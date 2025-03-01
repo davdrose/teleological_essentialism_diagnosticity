@@ -47,12 +47,10 @@ Teleological essentialism suggests that purposes are treated as the essences, ch
 
 - `code/` contains all the code for the experiments, analyzing data and generating figures.
   - `experiments` contains code for each experiment that was run. All experiments were pre-registered and run in jsPsych. 
-   - `experiment1` ([pre-registration](https://osf.io/2wb3e))
-	 - `experiment2` ([pre-registration](https://osf.io/q6xdj))
-	 - `experiment3` ([pre-registration](https://osf.io/rb8yt))
-	 - `experiment4` ([pre-registration](https://osf.io/3nshc))
-
-
+     - `experiment1` ([pre-registration](https://osf.io/2wb3e))
+	   - `experiment2` ([pre-registration](https://osf.io/q6xdj))
+	   - `experiment3` ([pre-registration](https://osf.io/rb8yt))
+	   - `experiment4` ([pre-registration](https://osf.io/3nshc))
   - `R` contains the analysis scripts that were used to analyze data and generate figures
      (view a rendered file [here](https://davdrose.github.io/teleological_essentialism_diagnosticity/)).
 - `data/` contains anonymized data from all experiments:
