@@ -1,93 +1,67 @@
-# Project name
+# Teleological essentialism, diagnosticity and multiple realizability
 
-## General points
+This repository contains the experiments, data, analyses, and figures for the paper "Teleological essentialism, diagnosticity and multiple realizability" by David Rose, Shaun Nichols and Tobias Gerstenberg.
 
-- for folder and file names: 
-	+ don't use white space in either folder or filenames, use an underscore "_" instead
-	+ (almost always) use lower case only
-- always use relative paths in your code
-	+ for example, to save a figure from an R script inside the `code/R/` folder the path should be "../../figures/figure_name.pdf"
-- keep your folder structure organized
-	+ we recommend adhering to the folder structure in this repository 
-	+ more complex projects may have additional folders such as `videos/`, `tables/`, ...
-- note: some of the folders are empty except for a `.keep` file
-	+ the `.keep` file is just there to make sure that github includes the otherwise empty folder 
-	+ feel free to delete the `.keep` file once you've added another file to that folder
-- each code subfolder has a readme file that should be updated with information about the code scripts 
-- use github issues to keep track of any larger decisions that we make along the way 
-- make sure to create a slack channel for each project, link up the github repository with the slack channel, and add the people working on the project to the github repo and slack channel 
-- see our lab wiki for more help: https://github.com/cicl-stanford/wiki/wiki
+<!-- The preprint can be found [here](https://psyarxiv.com/p5zt4) -->
 
-## Repository structure 
+__Contents__:
+- [Introduction](#Introduction)
+- [Repository structure](#Repository-structure)
+
+## Introduction
+
+<!-- <img src="figures/storyboard.png" width="100%" align="center">
+
+<br clear="left" />
+<br clear="right" /> -->
+
+Teleological essentialism suggests that purposes are treated as the essences, challenging  standard psychological essentialism which treats essences as scientifically construed common causes. We show that the effect of teleology can’t be explained by people reasoning diagnostically from changes in purposes to changes in scientifically construed causes, that people recognize that functions are multiply realizable, and that this applies even to biological kinds. A bee made to look like a spider, that has the DNA of bees but the purpose of spiders is categorized as a spider (Experiment 1). Even making explicit that DNA is a common cause of a feature (e.g., blue spots) and a purpose (e.g., making honey), changes to the purpose have a greater impact on categorization judgments than changes to a feature (Experiment 2). Moreover, interventions on a causal mechanism that produce a feature matter less than interventions on a causal mechanism that produces a function (Experiment 3), and functions matter more in categorization than causal mechanisms (Experiment 4). Together our findings support teleological essentialism, build on our understanding of how people think about functions, and suggest a reorientation of research on essentialist thinking.  
+
+
+
+## Repository structure
 
 ```
+
 ├── code
 │   ├── R
-│   ├── bash
-│   ├── experiments
-│   └── python
+│   └── experiments
 ├── data
-├── figures
-├── papers
-├── presentation
-└── writeup
+│   ├── experiment1
+│   ├── experiment2
+│   ├── experiment3
+│   └── experiment4
+├── docs
+│   ├── experiment1
+│   ├── experiment2
+│   ├── experiment3
+│   └── experiment4
+└── figures
+    ├── experiment1
+    ├── experiment2
+    ├── experiment3
+    └── experiment4
+
+
 ```
 
-### code 
-
-Put all your code here. Use a separate folder for scripts based on the programming language. 
-
-#### experiments 
-
-The experiments folder is for the online (or in lab) experiments. Each experiment should be in its own folder. When you run another experiment, make sure to create a new folder (so that we always know what an experiment looked like when it was run). In readme file for the experiments folder, provide a brief summary of each experiment. Also note down any additional information that may not be saved within each experiment (e.g. how much the payment was for MTurk participants).
-
-### data 
-
-Put your raw data files here. Any data wrangling to that file should happen in your code scripts. 
-
-### figures 
-
-Save all your figures here. You may want to include additional subfolder here such as `plots/`, `diagrams/` etc. 
-
-### papers 
-
-Put research papers here that are relevant for your project. 
-
-### presentation
-
-Put your project presentation here (e.g. your keynote, powerpoint, google slides, or pdf file).
-
-### writeup 
-
-Put all your writing here. This folder structure is likely to expand for more complex projects. For example, you could add a subfolders like folders `journal/cognition/submission/`, `proceedings/cogsci/resubmission/` etc. 
-
-## CRediT author statement 
-
-Each public repository should have a [credit author statement](https://www.elsevier.com/authors/policies-and-guidelines/credit-author-statement) 
-
-| Term                       | Definition                                                                                                                                                                                                    |
-|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Conceptualization          | Ideas; formulation or evolution of overarching research goals and aims                                                                                                                                        |
-| Methodology                | Development or design of methodology; creation of models                                                                                                                                                      |
-| Software                   | Programming, software development; designing computer programs; implementation of the computer code and supporting algorithms; testing of existing code components                                            |
-| Validation                 | Verification, whether as a part of the activity or separate, of the overall replication/ reproducibility of results/experiments and other research outputs                                                    |
-| Formal analysis            | Application of statistical, mathematical, computational, or other formal techniques to analyze or synthesize study data                                                                                       |
-| Investigation              | Conducting a research and investigation process, specifically performing the experiments, or data/evidence collection                                                                                         |
-| Resources                  | Provision of study materials, reagents, materials, patients, laboratory samples, animals, instrumentation, computing resources, or other analysis tools                                                       |
-| Data Curation              | Management activities to annotate (produce metadata), scrub data and maintain research data (including software code, where it is necessary for interpreting the data itself) for initial use and later reuse |
-| Writing - Original Draft   | Preparation, creation and/or presentation of the published work, specifically writing the initial draft (including substantive translation)                                                                   |
-| Writing - Review & Editing | Preparation, creation and/or presentation of the published work by those from the original research group, specifically critical review, commentary or revision – including pre-or postpublication stages     |
-| Visualization              | Preparation, creation and/or presentation of the published work, specifically visualization/ data presentation                                                                                                |
-| Supervision                | Oversight and leadership responsibility for the research activity planning and execution, including mentorship external to the core team                                                                      |
-| Project administration     | Management and coordination responsibility for the research activity planning and execution                                                                                                                   |
-| Funding acquisition        | Acquisition of the financial support for the project leading to this publication                                                                                                                              |
-
-**Sample CRediT author statement**
-- Zhang San: Conceptualization, Methodology, Software 
-- Priya Singh: Data curation, Writing- Original draft preparation
-- Wang Wu: Visualization, Investigation 
-- Jan Jansen: Supervision 
-- Ajay Kumar: Software, Validation
-- Sun Qi: Writing-Reviewing and Editing
+- `code/` contains all the code for the experiments, analyzing data and generating figures.
+  - `experiments` contains code for each experiment that was run. All experiments were pre-registered and run in jsPsych. 
+  	- `experiment1` ([pre-registration](https://osf.io/2wb3e))
+	- `experiment2` ([pre-registration](https://osf.io/q6xdj))
+	- `experiment3` ([pre-registration](https://osf.io/rb8yt))
+	- `experiment4` ([pre-registration](https://osf.io/3nshc))
 
 
+  - `R` contains the analysis scripts that were used to analyze data and generate figures
+     (view a rendered file [here](https://davdrose.github.io/teleological_essentialism_diagnosticity/)).
+- `data/` contains anonymized data from all experiments:
+  - `experiment1` contains `experiment1.db` which includes trial and demographic data. 
+  - `experiment2` contains `experiment2.csv` which includes the trial data and `experiment2_demographics.csv` which includes demographic data. The remaining files are for getting the probabilities of sentence completions from large language models for the properties used in experiment 2. 
+  - `experiment3` contains `experiment3.csv` which includes the trial data for experiment 3 while `experiment2_demographics.csv` contains the demographic data.
+- `docs/` contains all the experiment code for each experiment. You can preview the experiments below:
+    - [experiment 1](https://davdrose.github.io/teleological_essentialism_diagnosticity/experiment1)
+    - [experiment 2](https://davdrose.github.io/teleological_essentialism_diagnosticity/experiment2)
+	- [experiment 3](https://davdrose.github.io/teleological_essentialism_diagnosticity/experiment3)
+	- [experiment 4](https://davdrose.github.io/teleological_essentialism_diagnosticity/experiment4)
+- `figures/` contains all the figures from the paper (generated using the script in `code/R/`). 

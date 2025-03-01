@@ -1,0 +1,663 @@
+---
+title: "Teleological essentialism, diagnosticity and multiple realizability"
+author: "David Rose, Shaun Nichols & Tobias Gerstenberg"
+date: "`r Sys.Date()`"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  bookdown::html_document2:
+    toc: true
+    toc_depth: 6
+    toc_float: true
+    theme: cosmo
+    highlight: tango
+---
+
+# Load packages 
+
+```{r, message=F}
+
+library("brms")           # for Bayesian data analysis
+library("emmeans")        # for comparing models
+library("tidyverse")      # for everything else 
+
+```
+
+# Global options
+
+```{r}
+theme_set(theme_classic())
+
+options(dplyr.summarise.inform = F)
+
+```
+
+
+# EXPERIMENT 1
+## DATA
+### Read in data
+
+```{r message=FALSE, warning=FALSE}
+
+df.exp1 = read_csv("../../data/experiment1/exp1.csv")
+
+```
+
+### Wrangle
+
+```{r}
+
+df.exp1 = df.exp1 %>% 
+  mutate(comp_pass = case_when(condition == "telos_preserved" & comprehension_0_response == "Yes" & comprehension_1_response == "No" ~ "yes",
+                               condition == "telos_changed" & comprehension_0_response == "Yes" & comprehension_1_response == "Yes" ~ "yes"),
+         participant = 1:n(),
+         category = recode(category_likert, `0` = 1, `1` = 2, `2` = 3, `3` = 4, `4` = 5, `5` = 6,
+                           `6` = 7),
+         dna = recode(dna_likert, `0` = 1, `1` = 2, `2` = 3, `3` = 4, `4` = 5, `5` = 6,
+                           `6` = 7),
+         purpose = recode(purpose_likert, `0` = 7, `1` = 6, `2` = 5, `3` = 4, `4` = 3, `5` = 2,
+                           `6` = 1),
+         condition = factor(if_else(condition == "telos_changed", 1, 0), levels = c(0, 1), labels = c("preserved", "changed"))) %>% 
+  relocate(participant) %>%
+  select(participant, condition, category, dna, purpose)
+
+```
+
+
+### Demographics
+
+```{r}
+# read in demographic data
+
+df.exp1.demographics = read_csv("../../data/experiment1/exp1_demographics.csv")
+
+df.exp1.demographics %>% 
+  summarise(age_mean = mean(as.numeric(age), na.rm = TRUE))
+
+df.exp1.demographics %>% 
+  summarise(age_sd = sd(as.numeric(age), na.rm = TRUE))
+
+df.exp1.demographics %>% 
+  group_by(gender) %>% 
+  count() 
+
+df.exp1.demographics %>% 
+  group_by(race) %>% 
+  count() 
+
+```
+
+## STATS
+### Bayesian Models
+#### Categorization model
+
+```{r}
+
+# set contrasts so brms uses our dummy coded condition variable (where 0 = preserved and 1 = changed) with 0 = preserved as the reference level
+contrasts(df.exp1$condition) = contr.treatment(n = 2, base = 1)
+
+fit.brm1 = brm(formula = category ~ 1 + condition,
+     data = df.exp1,
+     seed = 1,
+     file = "cache/brm1_category")
+fit.brm1
+
+contrasts(df.exp1$condition)
+```
+
+#### DNA model
+```{r}
+
+# set contrasts so brms uses our dummy coded condition variable (where 0 = preserved and 1 = changed) with 0 = preserved as the reference level
+contrasts(df.exp1$condition) = contr.treatment(n = 2, base = 1)
+
+fit.brm1 = brm(formula = dna ~ 1 + condition,
+     data = df.exp1,
+     seed = 1,
+     file = "cache/brm1_dna")
+fit.brm1
+
+contrasts(df.exp1$condition)
+```
+
+#### Purpose model
+```{r}
+
+# set contrasts so brms uses our dummy coded condition variable (where 0 = preserved and 1 = changed) with 0 = preserved as the reference level
+contrasts(df.exp1$condition) = contr.treatment(n = 2, base = 1)
+
+fit.brm1 = brm(formula = purpose ~ 1 + condition,
+     data = df.exp1,
+     seed = 1,
+     file = "cache/brm1_purpose")
+fit.brm1
+
+contrasts(df.exp1$condition)
+```
+
+## PLOTS
+### Means for Category Judgments, DNA and Purpose
+```{r fig.height=3, fig.width=5, message=FALSE, warning=FALSE}
+
+df.plot = df.exp1 %>% 
+  pivot_longer(cols = category : purpose,
+               names_to = "question",
+               values_to = "response") %>% 
+  mutate(condition = fct_relevel(condition, "changed", "preserved"))
+
+
+ggplot(data = df.plot,
+       mapping = aes(x = question,
+                     y = response,
+                     group = condition,
+                     color = condition,
+                     fill = condition)) + 
+  geom_point(position = position_jitterdodge(dodge.width = 0.5,
+                                             jitter.width = 0.5,
+                                             jitter.height = 0.0),
+             alpha = 0.1) + 
+  stat_summary(fun.data = "mean_cl_boot",
+               position = position_dodge(width = 0.5),
+               shape = 21,
+               color = "black",
+               size = 1) + 
+  scale_fill_manual(values = c("changed" = "#E41A1C", "preserved" = "#377EB8"),
+                    breaks = c("changed", "preserved")) + 
+  scale_color_manual(values = c("changed" = "#E41A1C", "preserved" = "#377EB8"),
+                     breaks = c("changed", "preserved")) + 
+ scale_y_continuous(breaks = 1:7) +
+ labs(fill = "bee purpose", color = "bee purpose") +
+  theme(legend.position = "bottom",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+ggsave(width = 5, height = 3, "../../figures/experiment1/exp1_plot.pdf")
+
+
+```
+
+
+# EXPERIMENT 2
+## DATA
+### Read in data
+
+```{r, warning=FALSE, message=FALSE}
+## Read in data
+df.exp2 = read_csv("../../data/experiment2/exp2.csv")
+
+```
+
+
+### Wrangle
+```{r message=FALSE, warning=FALSE}
+
+df.exp2.long = df.exp2 %>% 
+  mutate(response = str_remove_all(string = response,
+                                    pattern = "[\\[\\]]"),
+         rt = str_remove_all(string = rt,
+                              pattern = "[\\[\\]]"),
+         item = str_remove_all(string = stimulus,
+                                pattern = "[\\[\\]'']")) %>% 
+  select(participant = workerid, item, response, rt) %>% 
+  separate_rows(item:rt, sep = ",", convert = TRUE) %>% 
+  mutate(creature_changed = str_extract(item, pattern = "xan|zerp"),
+         intervention = str_extract(item, pattern = "dna|purpose|spots"),
+         intervention = factor(intervention,
+                               levels = c("spots", "purpose", "dna")),
+         rt = rt / 1000,
+         participant = factor(participant, labels = 1:length(unique(participant)))) %>% 
+  select(participant, intervention, response, rt, creature_changed) %>% 
+  arrange(participant, intervention)
+
+#add comprehension check count
+df.exp2.comp = read_csv("../../data/experiment2/exp2_comprehension_check.csv")
+df.exp2.comp = df.exp2.comp %>% 
+  mutate(participant = factor(workerid, labels = 1:length(unique(workerid))))
+
+df.exp2.long = df.exp2.long %>% 
+  left_join(df.exp2.comp,
+            by = "participant")
+
+# remove comprehension check failures
+df.exp2.long = df.exp2.long %>% 
+  filter(!(comprehension_check >= 3)) %>% 
+  select(participant, intervention, response, rt, creature_changed) %>% 
+  arrange(participant, intervention)
+
+```
+
+## Demographics
+
+```{r}
+
+## Read in data
+df.exp2.demographics = read_csv("../../data/experiment2/exp2_demographics.csv")
+
+df.exp2.demographics %>% 
+  summarise(age_mean = mean(as.numeric(age), na.rm = TRUE))
+
+df.exp2.demographics %>% 
+  summarise(age_sd = sd(as.numeric(age), na.rm = TRUE))
+
+df.exp2.demographics %>% 
+  group_by(race) %>% 
+  count() 
+
+df.exp2.demographics %>% 
+  group_by(ethnicity) %>% 
+  count() 
+
+```
+
+## STATS 
+### Bayesian Model 
+
+```{r}
+
+fit.brm2 = brm(formula = response ~ 1 + intervention + (1 | participant), 
+               data = df.exp2.long,
+               seed = 1,
+               file = "cache/brm2") 
+fit.brm2
+
+
+```
+
+### Test hypotheses 
+
+```{r}
+fit.brm2 %>% 
+  emmeans(pairwise ~ intervention)
+```
+
+## PLOTS 
+
+### Feature vs. Purpose
+
+```{r}
+set.seed(1)
+df.plot = df.exp2.long %>% 
+  mutate(x = as.numeric(intervention),
+         x = x + rnorm(n = n(), sd = 0.02))
+
+ggplot(data = df.plot,
+       mapping = aes(x = x,
+                     y = response)) + 
+  geom_line(alpha = 0.1,
+            mapping = aes(group = participant)) +
+  geom_point(alpha = 0.3) + 
+  # stat_summary(mapping = aes(x = as.numeric(intervention)),
+  #              geom = "line",
+  #              fun = "mean",
+  #              color = "#4daf4a",
+  #              size = 1) +
+  stat_summary(mapping = aes(x = as.numeric(intervention)),
+               fun.data = "mean_cl_boot",
+               shape = 21,
+               size = 1.2,
+               fill = "#4daf4a") +
+  scale_x_continuous(breaks = 1:3,
+                     labels = c("spots\nchanged", "purpose\nchanged", "everything\nchanged")) +
+  theme(axis.title.x = element_blank(),
+        plot.margin = margin(r = 1, b = 0.3, unit = "cm"))
+
+ggsave(height = 4, width = 7, "../../figures/experiment2/exp2_plot.pdf")
+```
+
+
+# EXPERIMENT 3
+## DATA
+### Read in data 
+
+```{r}
+
+df.exp3 = read_csv("../../data/experiment3/exp3.csv")
+
+```
+
+### Wrangle 
+
+```{r}
+
+# item1
+df.item1_1 = df.exp3 %>% 
+  select(-c(workerid, proliferate.condition, error)) %>% 
+  select(item1_trial1, item1_trial1_image) %>% 
+  mutate(participant = rep(1:n())) %>% 
+  pivot_wider(names_from = "item1_trial1_image",
+              values_from = "item1_trial1")
+
+df.item1_2 = df.exp3 %>% 
+  select(-c(workerid, proliferate.condition, error)) %>% 
+  select(item1_trial2, item1_trial2_image) %>% 
+  mutate(participant = rep(1:n())) %>% 
+  pivot_wider(names_from = "item1_trial2_image",
+              values_from = "item1_trial2")
+
+df.item1_3 = df.exp3 %>% 
+  select(-c(workerid, proliferate.condition, error)) %>% 
+  select(item1_trial3, item1_trial3_image) %>% 
+  mutate(participant = rep(1:n())) %>% 
+  pivot_wider(names_from = "item1_trial3_image",
+              values_from = "item1_trial3")
+
+df.item1_4 = df.exp3 %>% 
+  select(-c(workerid, proliferate.condition, error)) %>% 
+  select(item1_trial4, item1_trial4_image) %>% 
+  mutate(participant = rep(1:n())) %>% 
+  pivot_wider(names_from = "item1_trial4_image",
+              values_from = "item1_trial4")
+
+
+# item2
+df.item2_1 = df.exp3 %>% 
+  select(-c(workerid, proliferate.condition, error)) %>% 
+  select(item2_trial1, item2_trial1_image) %>% 
+  mutate(participant = rep(1:n())) %>% 
+  pivot_wider(names_from = "item2_trial1_image",
+              values_from = "item2_trial1")
+
+df.item2_2 = df.exp3 %>% 
+  select(-c(workerid, proliferate.condition, error)) %>% 
+  select(item2_trial2, item2_trial2_image) %>% 
+  mutate(participant = rep(1:n())) %>% 
+  pivot_wider(names_from = "item2_trial2_image",
+              values_from = "item2_trial2")
+
+df.item2_3 = df.exp3 %>% 
+  select(-c(workerid, proliferate.condition, error)) %>% 
+  select(item2_trial3, item2_trial3_image) %>% 
+  mutate(participant = rep(1:n())) %>% 
+  pivot_wider(names_from = "item2_trial3_image",
+              values_from = "item2_trial3")
+
+df.item2_4 = df.exp3 %>% 
+  select(-c(workerid, proliferate.condition, error)) %>% 
+  select(item2_trial4, item2_trial4_image) %>% 
+  mutate(participant = rep(1:n())) %>% 
+  pivot_wider(names_from = "item2_trial4_image",
+              values_from = "item2_trial4")
+
+
+# item3
+df.item3_1 = df.exp3 %>% 
+  select(-c(workerid, proliferate.condition, error)) %>% 
+  select(item3_trial1, item3_trial1_image) %>% 
+  mutate(participant = rep(1:n())) %>% 
+  pivot_wider(names_from = "item3_trial1_image",
+              values_from = "item3_trial1")
+
+df.item3_2 = df.exp3 %>% 
+  select(-c(workerid, proliferate.condition, error)) %>% 
+  select(item3_trial2, item3_trial2_image) %>% 
+  mutate(participant = rep(1:n())) %>% 
+  pivot_wider(names_from = "item3_trial2_image",
+              values_from = "item3_trial2")
+
+df.item3_3 = df.exp3 %>% 
+  select(-c(workerid, proliferate.condition, error)) %>% 
+  select(item3_trial3, item3_trial3_image) %>% 
+  mutate(participant = rep(1:n())) %>% 
+  pivot_wider(names_from = "item3_trial3_image",
+              values_from = "item3_trial3")
+
+df.item3_4 = df.exp3 %>% 
+  select(-c(workerid, proliferate.condition, error)) %>% 
+  select(item3_trial4, item3_trial4_image) %>% 
+  mutate(participant = rep(1:n())) %>% 
+  pivot_wider(names_from = "item3_trial4_image",
+              values_from = "item3_trial4")
+
+
+
+df.exp3 = df.item1_1 %>% 
+  bind_rows(df.item1_2,
+            df.item1_3,
+            df.item1_4,
+            df.item2_1,
+            df.item2_2,
+            df.item2_3,
+            df.item2_4,
+            df.item3_1,
+            df.item3_2,
+            df.item3_3,
+            df.item3_4)
+            
+            
+
+df.exp3 = df.exp3 %>% 
+  pivot_longer(-participant,
+               names_to = "temp_name",
+               values_to = "response") %>% 
+  separate(.,
+           col = "temp_name",
+           into = c("item", "trial"),
+           sep = "_") %>% 
+  arrange(participant) %>% 
+  mutate(response = recode(response, `0` = 1, `1` = 2, `2` = 3, `3` = 4, `4` = 5, `5` = 6, `6` = 7)) %>% 
+  drop_na() %>% 
+   mutate(property = case_when(item == "jig" & trial == "intervention1" ~ "feature_mechanism_no_feature",
+                              item == "jig" & trial == "intervention2" ~ "purpose_mechanism_no_purpose",
+                              item == "jig" & trial == "intervention3" ~ "feature",
+                              item == "jig" & trial == "intervention4" ~ "purpose",
+                              item == "xan" & trial == "intervention1" ~ "feature_mechanism_no_feature",
+                              item == "xan" & trial == "intervention2" ~ "purpose_mechanism_no_purpose",
+                              item == "xan" & trial == "intervention3" ~ "feature",
+                              item == "xan" & trial == "intervention4" ~ "purpose",
+                              item == "zerp" & trial == "intervention1" ~ "feature_mechanism_no_feature",
+                              item == "zerp" & trial == "intervention2" ~ "purpose_mechanism_no_purpose",
+                              item == "zerp" & trial == "intervention3" ~ "feature",
+                              item == "zerp" & trial == "intervention4" ~ "purpose"))
+
+```
+
+
+### Demographics
+
+```{r}
+# read in demographic data
+
+df.exp3.demographics = read_csv("../../data/experiment3/exp3_demographics.csv")
+
+df.exp3.demographics %>% 
+  summarise(age_mean = mean(as.numeric(age), na.rm = TRUE))
+
+df.exp3.demographics %>% 
+  summarise(age_sd = sd(as.numeric(age), na.rm = TRUE))
+
+df.exp3.demographics %>% 
+  group_by(gender) %>% 
+  count() 
+
+df.exp3.demographics %>% 
+  group_by(race) %>% 
+  count() 
+
+```
+
+
+## STATS
+### Bayesian Model
+
+```{r}
+
+df.exp3 = df.exp3 %>%
+  filter(property  != "feature_mechanism_feature") %>%
+  filter(property  != "purpose_mechanism_purpose") %>%
+  mutate(intervention = ifelse( str_detect(property,
+                                    "mechanism"), "disabling", "blocking"),
+         type = ifelse( str_detect(property,
+                                    "feature"), "feature", "purpose"))
+
+df.exp3 = df.exp3 %>% 
+  mutate(intervention_type = factor(if_else(intervention == "blocking", 1, 0), levels = c(0, 1), labels = c("disabling", "blocking")),
+         intervention_target = factor(if_else(type == "purpose", 1, 0), levels = c(0, 1), labels = c("feature", "purpose")))
+  
+
+# set contrasts so brm uses our dummy coded intervention type with 0 = mechanism disabling and 1 = realization blocking. Intervention target is dummy coded so that 0 = feature and 1 = purpose.
+contrasts(df.exp3$intervention_type) = contr.treatment(n = 2, base = 1)
+contrasts(df.exp3$intervention_target) = contr.treatment(n = 2, base = 1)
+
+#Note the random effect that were preregistered produced model estimation errors. The reported model uses just random intercepts
+
+fit.brm3 = brm(formula = response ~ 1 + intervention_type*intervention_target + (1 | participant),
+     data = df.exp3,
+     seed = 1,
+      iter = 4000,
+     warmup = 1000,
+     control = list(adapt_delta = .99),
+     file = "cache/brm3")
+
+fit.brm3
+
+contrasts(df.exp3$intervention_type)
+contrasts(df.exp3$intervention_target)
+```
+
+### Test Hypotheses
+
+```{r}
+fit.brm3 %>% 
+  emmeans(pairwise ~ intervention_target | intervention_type) 
+
+```
+
+## PLOTS
+### Feature vs. Purpose in Mechanism Disabling and Masking
+
+
+```{r fig.height=5, fig.width=8, message=FALSE, warning=FALSE}
+
+plot_labels = c("disabling" = "disabling", "blocking" = "masking")
+
+
+
+ggplot(data = df.exp3,
+       mapping = aes(x = type,
+                     y = response,
+                     color = type)) +
+  ggdist::stat_halfeye(aes(fill = type), adjust = .5, width = .3, .width = 0, justification = -.3, point_colour = NA) +
+  geom_boxplot(width = .1, outlier.shape = NA) +
+  gghalves::geom_half_point(side = "l", range_scale = .2, alpha = .1) +
+  scale_fill_brewer(palette = "Set1") +
+  scale_color_brewer(palette = "Set1") +
+  scale_y_continuous(breaks = 1:7, limits = c(.5, 7.5)) +
+  theme(plot.title = element_text(size=16, hjust = .5),
+        legend.title = element_blank(),
+        legend.position = "bottom",
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank()) +
+   facet_wrap(~intervention, labeller = labeller(intervention = plot_labels))
+
+ggsave(width = 8, height = 5, "../../figures/experiment3/exp3_plot.pdf")
+
+```
+
+
+# EXPERIMENT 4
+## DATA
+### Read in data 
+
+```{r}
+
+df.exp4 = read_csv("../../data/experiment4/exp4.csv")
+
+```
+### Wrangle 
+
+```{r}
+df.exp4.condition =df.exp4 %>% 
+  mutate(participant = 1:n()) %>% 
+  pivot_longer(cols = creature1_response: creature3_response,
+               names_to = "trial",
+               values_to = "response") %>% 
+  mutate(response = recode(response, `0` = 1, `1` = 2, `2` = 3, `3` = 4, `4` = 5, `5` = 6, `6` = 7)) %>% 
+  select(participant, condition, response)
+
+df.exp4.creature = df.exp4 %>% 
+  mutate(participant = 1:n()) %>% 
+  pivot_longer(cols = creature_1: creature_3,
+               names_to = "creature_tmp",
+               values_to = "creature") %>% 
+  select(creature)
+
+df.exp4 = df.exp4.condition %>% 
+  bind_cols(df.exp4.creature) %>% 
+  mutate(condition = factor(if_else(condition == "same", 1, 0), levels = c(0, 1), labels = c("different", "same")))
+
+```
+
+### Demographics
+
+```{r}
+# read in demographic data
+
+df.exp4.demographics = read_csv("../../data/experiment4/exp4_demographics.csv")
+
+df.exp4.demographics %>% 
+  summarise(age_mean = mean(as.numeric(age), na.rm = TRUE))
+
+df.exp4.demographics %>% 
+  summarise(age_sd = sd(as.numeric(age), na.rm = TRUE))
+
+df.exp4.demographics %>% 
+  group_by(gender) %>% 
+  count() 
+
+df.exp4.demographics %>% 
+  group_by(race) %>% 
+  count() 
+
+```
+
+
+## STATS
+### Bayesian Model
+
+```{r}
+
+# set contrasts so brm uses our dummy coded condition variable (where 0 = different purpose and 1 = same purpose) with 0 = different purpose as the reference level
+contrasts(df.exp4$condition) = contr.treatment(n = 2, base = 1)
+
+fit.brm4 = brm(formula = response ~ 1 + condition + (1 | participant),
+     data = df.exp4,
+     seed = 1,
+     file = "cache/brm4")
+
+fit.brm4
+
+contrasts(df.exp4$condition)
+```
+
+## PLOTS 
+### Causal mechanism vs Purpose
+```{r fig.height=4, fig.width=5, message=FALSE, warning=FALSE}
+
+df.plot = df.exp4 %>% 
+  mutate(condition = recode(condition, "different" = "same mechanism, \n\ different purpose", "same" = "different mechanism, \n\ same purpose"))
+
+ggplot(data = df.plot,  mapping = aes(x = condition,
+                                         y = response,
+                                         color = condition)) +
+  ggdist::stat_halfeye(aes(fill = condition), adjust = .5, width = .3, .width = 0, justification = -.3, point_colour = NA) +
+  geom_boxplot(width = .1, outlier.shape = NA) +
+  gghalves::geom_half_point(side = "l", range_scale = .2, alpha = .1) +
+  scale_fill_brewer(palette = "Set1") +
+  scale_color_brewer(palette = "Set1") +
+  scale_y_continuous(breaks = 1:7, limits = c(.5, 7.5)) +
+  theme(plot.title = element_text(size=16, hjust = .5),
+        legend.title = element_blank(),
+        legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+ggsave(width = 5, height = 4, "../../figures/experiment4/exp4_plot.pdf")
+
+```
+
+# SESSION INFO
+
+```{r}
+
+sessionInfo()
+
+```

@@ -1,0 +1,29 @@
+
+#jspsych-html-button-response-btngroup {
+    padding-bottom: 30px;
+  }
+  
+  #jspsych-html-button-response {
+    width: 100%;
+    height: auto;
+  }
+  
+  .fill {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden
+  }
+  .fill img {
+    flex-shrink: 0;
+    min-width: 100%;
+    min-height: 100%
+  }
+  
+  /* 
+  .prompt {
+    padding: 20px;
+    font-size: 30px;
+    position: relative;
+    top: -175px;
+  } */ 

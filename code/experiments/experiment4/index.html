@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Experiment</title>
+
+    <link href="https://unpkg.com/jspsych@7.2.3/css/jspsych.css" rel="stylesheet" type="text/css" />
+    <style id="jspsych-survey-likert-css">
+        .jspsych-survey-likert-statement {
+            display: block;
+            font-size: 16px;
+            padding-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        .jspsych-survey-likert-opts {
+            list-style: none;
+            width: " + ";
+            margin: auto;
+            padding: 10 10 35px;
+            display: block;
+            font-size: 25px;
+            line-height: 1.3em;
+        }
+
+        .jspsych-survey-likert-opt-label {
+            line-height: 0.9em;
+            color: #444;
+        }
+
+        .jspsych-survey-likert-opts:before {
+            display: none !important;
+        }
+
+        .jspsych-survey-likert-opts:last-of-type {
+            border-bottom: 0;
+        }
+
+        .jspsych-survey-likert-opts li {
+            display: inline-block;
+            /*width:19%;*/
+            text-align: center;
+            vertical-align: top;
+        }
+
+        .jspsych-survey-likert-opts li input[type=radio] {
+            display: block;
+            position: relative;
+            top: 0;
+            left: 50%;
+            margin-left: -6px;
+        }
+    </style>';
+
+    <script src="https://unpkg.com/jspsych@7.2.3"></script>
+    <script src='js/jquery.min.js'></script>
+    <script src='js/jquery-ui.min.js'></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-text@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-likert@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-html-form@1.0.1"></script>
+    <script src="https://proliferate.alps.science/static/js/proliferate.js"> </script>
+    <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.1"></script>
+
+
+
+    <script src='js/intro.js'></script>
+    <script src='js/consent.js'></script>
+    <script src='js/trial.js'></script>
+    <script src='js/demographic_form.js'></script>
+</head>
+
+<body></body>
+<script>
+
+
+
+
+    let timeline = []
+
+
+    // Data display
+
+    let jsPsych = initJsPsych({
+        show_progress_bar: true,
+        on_finish: () => {
+
+            jsPsych.data.displayData();
+            let responseData = {};
+
+            for (const judgmentPage of jsPsych.data.get().filter({ task: "judgment" }).values()) {
+                const creatureIdx = judgmentPage["creature_idx"];
+                responseData[`creature_${creatureIdx}`] = judgmentPage["creature"];
+                responseData["condition"] = judgmentPage["condition"];
+                responseData[`creature${creatureIdx}_response`] = judgmentPage["response"]["Q0"];
+            };
+
+            console.log(responseData);
+
+
+            let gender = jsPsych.data.get().filter({ "page_type": "participant_survey" }).values()[0]["response"].gender
+            if (!gender && jsPsych.data.get().filter({ "page_type": "participant_survey" }).values()[0]["response"].other_gender) {
+                gender = "other_gender"
+            }
+            let age = parseInt(jsPsych.data.get().filter({ "page_type": "participant_survey" }).values()[0]["response"].age)
+            let race = jsPsych.data.get().filter({ "page_type": "participant_survey" }).values()[0]["response"].race
+            if (!race && jsPsych.data.get().filter({ "page_type": "participant_survey" }).values()[0]["response"].other_race) {
+                race = "other_race"
+            }
+            let ethicity = jsPsych.data.get().filter({ "page_type": "participant_survey" }).values()[0]["response"].ethicity
+            let demographics = {
+                "age": age,
+                "gender": gender,
+                "race": race,
+                "ethicity": ethicity
+            }
+
+            // combine all data 
+            let data_final = {
+                "responses": responseData,
+                "participants": demographics,
+            }
+
+            console.log(data_final)
+
+            proliferate.submit(data_final);
+
+            $('#jspsych-content').html('<div style="margin: auto;"> <p> Thank you for' +
+                ' participating in this experiment! </p> <p> Redirecting you back to' +
+                ' Prolific... </p>');
+            setTimeout(function () { }, 400);
+        }
+
+    })
+
+
+    // // Consent
+
+    timeline.push(consent)
+
+    // timeline.push(consent)
+
+    const creatureList = jsPsych.randomization.shuffle(["Xan", "Jig", "Zerp"])
+    const expCondition = jsPsych.randomization.shuffle(["different", "same"])[0];
+    console.log(expCondition);
+
+    // // intro start
+
+    const intro_start_pages = {
+        type: jsPsychHtmlButtonResponse,
+        stimulus: () => `
+                  <img src='images/${intro_pages}' width="1000"></img>
+                  <br>
+                `,
+        choices: ['continue'],
+    };
+    timeline.push(intro_start_pages);
+
+    // trials pages
+    let creatureIdx = 1;
+    for (const creature of creatureList) {
+        for (const page of trials[creature]["intro"]) {
+            const xan_intro = {
+                type: jsPsychHtmlButtonResponse,
+                stimulus: () => `
+                  <img src='images/${page}' width="1000"></img>
+                  <br>
+                `,
+                choices: ['continue'],
+            };
+            timeline.push(xan_intro);
+        };
+
+        for (const trial_intro of trials[creature]["trial"][expCondition].slice(0, 3)) {
+
+            console.log(trials[creature]["trial"][expCondition]);
+            const trialIntroPage = {
+                type: jsPsychHtmlButtonResponse,
+                stimulus: () => `
+                  <img src='images/${trial_intro}' width="1000"></img>
+                  <br>
+                `,
+                choices: ['continue'],
+            };
+            timeline.push(trialIntroPage);
+        };
+        const judgment = {
+            type: jsPsychSurveyLikert,
+            preamble: `<div style="text-align:left; padding:20px; max-width:1000px;">
+                           <img src='images/${trials[creature]["trial"][expCondition][3]}' width="980" height="530"></img></div>`,
+            questions: [
+                {
+                    prompt: "",
+                    labels: [`<div style="font-size:18px;">definitely not a ${creature}</div>`, ``, ``, ``, ``, ``, `<div style="font-size: 18px;">definitely a ${creature}</div>`],
+                }
+            ],
+            data: {
+                "condition": expCondition,
+                "creature_idx": creatureIdx,
+                "creature": creature,
+                task: "judgment",
+            }
+
+        };
+        timeline.push(judgment);
+        creatureIdx += 1;
+    }
+
+
+    // demographics
+
+    timeline.push(demographic_form)
+
+
+    jsPsych.run(timeline);
+</script>
+
+</html>
